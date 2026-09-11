@@ -1,35 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getNews } from "../api/endpoints";
+import "./modern-pages.css";
 
 export default function News() {
   const [posts, setPosts] = useState([]);
-
-  useEffect(() => {
-    getNews().then((data) => setPosts(data.results ?? data)).catch(() => {});
-  }, []);
+  useEffect(() => { getNews().then((data) => setPosts(data.results ?? data)).catch(() => {}); }, []);
 
   return (
-    <div className="container section">
-      <span className="eyebrow">Yangiliklar</span>
-      <h1>Maktab hayotidan xabarlar</h1>
-
-      <div style={{ display: "grid", gap: 24, marginTop: 32 }}>
-        {posts.map((post) => (
-          <article key={post.id} style={{ borderBottom: "1px solid var(--color-line)", paddingBottom: 24 }}>
-            {post.cover_image && (
-              <img src={post.cover_image} alt={post.title} style={{ borderRadius: 4, marginBottom: 12, maxHeight: 260, objectFit: "cover", width: "100%" }} />
-            )}
-            <h2 style={{ marginBottom: 4 }}>
-              <Link to={`/yangiliklar/${post.slug}`} style={{ textDecoration: "none" }}>{post.title}</Link>
-            </h2>
-            <span style={{ color: "var(--color-teal)", fontSize: "0.85rem" }}>
-              {new Date(post.published_at).toLocaleDateString("uz-UZ")}
-            </span>
-          </article>
-        ))}
-        {posts.length === 0 && <p>Hozircha yangiliklar yo'q.</p>}
-      </div>
-    </div>
+    <main className="page-shell"><div className="container">
+      <header className="page-header"><div><span className="eyebrow">Yangiliklar</span><h1>Maktab hayotidan xabarlar</h1><p>Roziy maktabidagi yangiliklar, tadbirlar va muhim e'lonlar.</p></div></header>
+      {posts.length ? <div className="news-grid">{posts.map((post) => <article key={post.id} className="news-card">
+        {post.cover_image && <img src={post.cover_image} alt={post.title} />}
+        <div className="news-card__body"><span className="news-card__date">{new Date(post.published_at).toLocaleDateString("uz-UZ")}</span><h2><Link to={`/yangiliklar/${post.slug}`}>{post.title}</Link></h2><Link className="btn btn--outline" to={`/yangiliklar/${post.slug}`}>Batafsil →</Link></div>
+      </article>)}</div> : <div className="empty-state">Hozircha yangiliklar yo'q.</div>}
+    </div></main>
   );
 }
